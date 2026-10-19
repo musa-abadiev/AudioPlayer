@@ -16,9 +16,22 @@ android {
         versionName = "1.0"
     }
 
+    // Постоянный ключ подписи: файл release.jks в репозитории,
+    // пароль — в секрете GitHub KEYSTORE_PASSWORD.
+    val keystorePassword: String? = System.getenv("KEYSTORE_PASSWORD")?.takeIf { it.isNotBlank() }
+    signingConfigs {
+        create("release") {
+            storeFile = file("release.jks")
+            storePassword = keystorePassword ?: ""
+            keyAlias = "audioplayer"
+            keyPassword = keystorePassword ?: ""
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (keystorePassword != null) signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
