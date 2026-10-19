@@ -1,19 +1,28 @@
-name: Build APK
-on: [push, workflow_dispatch]
+name: Сборка APK
+
+on:
+  push:
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: unzip -o AudioPlayer.zip
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-      - name: Build
-        working-directory: AudioPlayer
-        run: chmod +x gradlew && ./gradlew assembleDebug
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Собрать APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
       - uses: actions/upload-artifact@v4
         with:
           name: AudioPlayer-apk
-          path: AudioPlayer/app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
